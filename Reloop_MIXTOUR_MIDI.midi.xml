@@ -232,12 +232,12 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>MoveVertical</key>
+                <key>MIXTOUR.seek</key>
                 <description>[SEEK]library select up/down</description>
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <selectknob/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -302,22 +302,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>sync_enabled</key>
+                <key>MIXTOUR.sync1</key>
                 <description>[SYNC]sync</description>
                 <status>0x90</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>sync_enabled</key>
+                <key>MIXTOUR.sync2</key>
                 <description>[SYNC]sync</description>
                 <status>0x91</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -342,22 +342,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>MIXTOUR.play1</key>
                 <description>[PLAY]play</description>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>MIXTOUR.play2</key>
                 <description>[PLAY]play</description>
                 <status>0x91</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

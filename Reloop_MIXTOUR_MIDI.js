@@ -67,6 +67,12 @@ const LED_CONTROL = {
   VOLUME_INDICATOR: 0x11,
 }
 
+const HOLD = {
+  NONE: 0,
+  CLEAN: 1,
+  DIRTY: 2,
+}
+
 const CH1 = 0x90;
 const CH2 = 0x91;
 /**
@@ -94,8 +100,7 @@ function turn_off_all_led(midi) {
  * /utils
  */
 
-
-function MIXTOUR() { };
+var MIXTOUR = {};
 
 // sends the status of every item on the control surface
 var ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7];
@@ -104,8 +109,10 @@ MIXTOUR.init = function () {
   // initialize Mixxx with current values on control surface
   midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
-  // input to Mixxx
-  engine.makeConnection("", "rate", "MIXTOUR.rate");
+  MIXTOUR.sync1_hold = HOLD.NONE;
+  MIXTOUR.sync2_hold = HOLD.NONE;
+  MIXTOUR.play1_hold = HOLD.NONE;
+  MIXTOUR.play2_hold = HOLD.NONE;
 }
 
 MIXTOUR.shutdown = function () {
@@ -113,7 +120,7 @@ MIXTOUR.shutdown = function () {
 }
 
 MIXTOUR.rate = function (channel, control, value, status, group) {
-  if (!group) {return;}
+  if (!group) { return; }
 
   var sign = 0;
   if (value === 0x01) {
@@ -129,4 +136,93 @@ MIXTOUR.rate = function (channel, control, value, status, group) {
   const delta = sign * 1 / 16;
   const current = engine.getValue(group, "rate");
   engine.setValue(group, "rate", current + delta);
+}
+
+MIXTOUR.sync1 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.sync1_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.sync1_hold !== HOLD.DIRTY) {
+    engine.setValue(group, "beatsync", 1);
+  }
+
+  MIXTOUR.sync1_hold = HOLD.NONE;
+}
+
+MIXTOUR.sync2 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.sync2_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.sync2_hold !== HOLD.DIRTY) {
+    engine.setValue(group, "beatsync", 1);
+  }
+
+  MIXTOUR.sync2_hold = HOLD.NONE;
+}
+
+
+MIXTOUR.play1 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.play1_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.play1_hold !== HOLD.DIRTY) {
+    const current = engine.getValue(group, "play");
+    engine.setValue(group, "play", current ^ 1);
+  }
+
+  MIXTOUR.play1_hold = HOLD.NONE;
+}
+
+MIXTOUR.play2 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.play2_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.play2_hold !== HOLD.DIRTY) {
+    const current = engine.getValue(group, "play");
+    engine.setValue(group, "play", current ^ 1);
+  }
+
+  MIXTOUR.play2_hold = HOLD.NONE;
+}
+
+MIXTOUR.seek = function (channel, control, value, status, group) {
+  script.midiDebug(channel, control, value, status, group);
+  const sign = value == 0x01 ? 1 : -1;
+  if (MIXTOUR.sync1_hold || MIXTOUR.sync2_hold) {
+    const delta = sign * 1 / 16;
+    const ch = MIXTOUR.sync1_hold ? "[Channel1]" : "[Channel2]";
+    const current = engine.getValue(ch, "rate");
+    engine.setValue(ch, "rate", current + delta);
+
+    if (MIXTOUR.sync1_hold !== HOLD.NONE) {
+      MIXTOUR.sync1_hold = HOLD.DIRTY;
+    } else if (MIXTOUR.sync2_hold !== HOLD.NONE) {
+      MIXTOUR.sync2_hold = HOLD.DIRTY;
+    }
+  }
+  else if (MIXTOUR.play1_hold || MIXTOUR.play2_hold) {
+    const chn = MIXTOUR.play1_hold ? 1 : 2;
+    const ch = "[Channel" + chn + "]";
+    if (sign > 0) {
+      engine.setValue(ch, "beatjump_8_forward", 1);
+    } else {
+      engine.setValue(ch, "beatjump_4_backward", 1);
+    }
+    if (chn === 1) {
+      MIXTOUR.play1_hold = HOLD.DIRTY;
+    } else {
+      MIXTOUR.play2_hold = HOLD.DIRTY;
+    }
+  }
+  else {
+    engine.setValue("[Library]", "MoveVertical", sign);
+  }
 }
