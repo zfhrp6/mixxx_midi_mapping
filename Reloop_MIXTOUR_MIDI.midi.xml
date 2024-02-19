@@ -7,7 +7,7 @@
     </info>
     <controller id="MIXTOUR">
         <scriptfiles>
-            <file functionprefix="MIXTOUR" filename="Reloop_MIXTOUR_MIDI.js"/>
+            <file filename="Reloop_MIXTOUR_MIDI.js" functionprefix="MIXTOUR"/>
         </scriptfiles>
         <controls>
             <control>
@@ -262,29 +262,9 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_8_toggle</key>
+                <key>MIXTOUR.loop1</key>
                 <description>[LOOP]8-beat LOOP on/off</description>
                 <status>0x90</status>
-                <midino>0x09</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>beatloop_8_toggle</key>
-                <description>[LOOP]8-beat LOOP on/off</description>
-                <status>0x91</status>
-                <midino>0x09</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>MIXTOUR.rate</key>
-                <description>[MODE_T+SEEK]increase/decrease 0.50% BPM</description>
-                <status>0xB0</status>
                 <midino>0x09</midino>
                 <options>
                     <script-binding/>
@@ -292,9 +272,9 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MIXTOUR.rate</key>
-                <description>[MODE_T+SEEK]increase/decrease 0.50% BPM</description>
-                <status>0xB1</status>
+                <key>MIXTOUR.loop2</key>
+                <description>[LOOP]8-beat LOOP on/off</description>
+                <status>0x91</status>
                 <midino>0x09</midino>
                 <options>
                     <script-binding/>
@@ -436,46 +416,6 @@
                 <description>[C4] hotcue 4</description>
                 <status>0x91</status>
                 <midino>0x10</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_4_backward</key>
-                <description>[Shift+MODE_T]4beats back</description>
-                <status>0x90</status>
-                <midino>0x44</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>beatjump_4_backward</key>
-                <description>[Shift+MODE_T]4beats back</description>
-                <status>0x91</status>
-                <midino>0x44</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_8_forward</key>
-                <description>[SHIFT+MODE_C]8beats forward</description>
-                <status>0x90</status>
-                <midino>0x45</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>beatjump_8_forward</key>
-                <description>[SHIFT+MODE_C]8beats forward</description>
-                <status>0x91</status>
-                <midino>0x45</midino>
                 <options>
                     <normal/>
                 </options>

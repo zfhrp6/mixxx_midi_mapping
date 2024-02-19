@@ -193,6 +193,42 @@ MIXTOUR.play2 = function (channel, control, value, status, group) {
   MIXTOUR.play2_hold = HOLD.NONE;
 }
 
+MIXTOUR.loop1 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.loop1_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.loop1_hold !== HOLD.DIRTY) {
+    const enabled = engine.getValue(group, "loop_enabled");
+    if (enabled) {
+      engine.setValue(group, "reloop_toggle", 1);
+    } else {
+      engine.setValue(group, "beatloop_8_activate", 1);
+    }
+  }
+
+  MIXTOUR.loop1_hold = HOLD.NONE;
+}
+
+MIXTOUR.loop2 = function (channel, control, value, status, group) {
+  if (value === 0x7f) {
+    MIXTOUR.loop2_hold = HOLD.CLEAN;
+    return;
+  }
+
+  if (MIXTOUR.loop2_hold !== HOLD.DIRTY) {
+    const current = engine.getValue(group, "loop_enabled");
+    if (current) {
+      engine.setValue(group, "reloop_toggle", 1);
+    } else {
+      engine.setValue(group, "beatloop_8_activate", 1)
+    }
+  }
+
+  MIXTOUR.loop2_hold = HOLD.NONE;
+}
+
 MIXTOUR.seek = function (channel, control, value, status, group) {
   script.midiDebug(channel, control, value, status, group);
   const sign = value == 0x01 ? 1 : -1;
@@ -208,6 +244,7 @@ MIXTOUR.seek = function (channel, control, value, status, group) {
       MIXTOUR.sync2_hold = HOLD.DIRTY;
     }
   }
+
   else if (MIXTOUR.play1_hold || MIXTOUR.play2_hold) {
     const chn = MIXTOUR.play1_hold ? 1 : 2;
     const ch = "[Channel" + chn + "]";
@@ -222,6 +259,22 @@ MIXTOUR.seek = function (channel, control, value, status, group) {
       MIXTOUR.play2_hold = HOLD.DIRTY;
     }
   }
+
+  else if (MIXTOUR.loop1_hold || MIXTOUR.loop2_hold) {
+    const chn = MIXTOUR.loop1_hold ? 1 : 2;
+    const ch = "[Channel" + chn + "]";
+    if (sign > 0) {
+      engine.setValue(ch, "loop_double", 1);
+    } else {
+      engine.setValue(ch, "loop_halve", 1);
+    }
+    if (chn === 1) {
+      MIXTOUR.loop1_hold = HOLD.DIRTY;
+    } else {
+      MIXTOUR.loop2_hold = HOLD.DIRTY;
+    }
+  }
+  
   else {
     engine.setValue("[Library]", "MoveVertical", sign);
   }
